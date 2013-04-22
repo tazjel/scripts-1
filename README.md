@@ -1,4 +1,0 @@
-scripts
-=======
-
-Meus scripts pessoais
