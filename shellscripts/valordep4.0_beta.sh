@@ -116,7 +116,7 @@ done
 function_ambiente() {
 case $amb in
         teste)  servers=("Teste" "10.1.0.52" "online" "10.1.0.52")
-                db_options="-pvalor123"
+                db_options="-p"
         ;;
         *) show_usage
 esac
