@@ -118,24 +118,6 @@ case $amb in
         teste)  servers=("Teste" "10.1.0.52" "online" "10.1.0.52")
                 db_options="-pvalor123"
         ;;
-		#valid)  servers=("validacao" "web-valid-mysql01" "online" "10.1.1.35")
-        #        db_options="-pvalor123"
-        #;;
-        #valid_blog) servers=("validacao" "web-valid-mysql01" "blogs" "10.1.1.35") 
-        #        db_options="-pvalor123"
-        #;;
-        #preprod)  servers=("preprod" "web-preprod-mysql01" "online" "web-preprod-site")
-        #          db_options="-pvalor123"
-        #;;
-        #preprod_blog)  servers=("preprod" "web-preprod-mysql1" "blogs" "web-preprod-site")
-        #          db_options="-pvalor123"
-        #;;
-        #prod) servers=("valor_beta_ok" "mysql-pressflow2" "online" "www10" "www11" "www12" "www13" "mysql1" "mysql2")
-        #      db_options="--single-transaction -udump_user -pdumping -h127.0.0.1 -P63306 --protocol=tcp --quote-names"
-        #;;
-        #prod_blog) servers=("valor_beta_ok" "mysql-pressflow2" "blogsvip" "www10" "www11" "www12" "www13")
-        #      db_options="--single-transaction -udump_user -pdumping -h127.0.0.1 -P63306 --protocol=tcp --quote-names"
-        #;;
         *) show_usage
 esac
 
