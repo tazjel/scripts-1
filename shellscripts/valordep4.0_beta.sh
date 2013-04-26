@@ -13,15 +13,17 @@ userid=`id -un`
 userhost=`who i am | awk -F " " '{print $5}'`
 verify=0
 optind=1
+success=0
+error=1
 
 # Environment Definitions
 docroot="/var/www/valor"
 httpduser="apache"
 httpgrp="websrv"
 
-show_usage() {
+function show_usage() {
 echo -e "Usage: \n \
-\tvalordep [-a ambiente] [-bucdxhv] [-f nome_do_arquivo.tar]\n\n \
+\t`basename $0` [-a ambiente] [-bucdxhv] [-f nome_do_arquivo.tar]\n\n \
 \t\t[-a] \tDefine o ambiente a ser aplicado. \n \
 \t\t\t|__valid - Aplica o pacote no ambiente de Validacao \n \
 \t\t\t|__valid_blog - Aplica o pacote no ambiente BlogsValorPRO de Validacao \n \
@@ -39,7 +41,10 @@ echo -e "Usage: \n \
 \t\t[-f] \tDefine o arquivo a ser aplicado em formato .tar \n"
 }
 
-function_initial() {
+function initial() {
+
+: ${docroot?} ${httpuser?} ${httpgrp?}
+
 if [ $userid != "root" ]; then
         echo "Deve ser executado com root!"
         exit 1
@@ -64,12 +69,12 @@ else
 fi
 }
 
-function_log() {
+function log() {
 echo "[$datelog] - $amb - $userhost - $userid - $full_path - backup:${servers[2]}:$bkpfls:$bkpset - dump:${servers[1]}:$bkpdmp" >> $dirlog/$applog
 echo -ne "\t + Registred in file log $dirlog/$applog"
 }
 
-function_exec_routine() {
+function exec_routine() {
 for ((i=3 ; i<${#servers[@]} ; i++)); do
         echo -ne "\t + Copying $pack to ${servers[$i]}..."
         scp -q $full_path root@${servers[$i]}:/tmp;
@@ -91,11 +96,11 @@ done
 log
 }
 
-function_exec_list() {
+function exec_list() {
 # DESENV
 }
 
-function_check_files() {
+function check_files() {
 for ((i=3 ; i<${#servers[@]} ; i++))
 do
         echo -ne "\t + Verifying files in ${servers[$i]}..."
@@ -113,7 +118,7 @@ do
 done
 }
 
-function_ambiente() {
+function ambiente() {
 case $amb in
         teste)  servers=("Teste" "10.1.0.52" "online" "10.1.0.52")
                 db_options="-p"
@@ -131,7 +136,7 @@ else
 fi
 }
 
-function_backup() {
+function backup() {
 bkpfls="files_${servers[2]}-$data.tar.gz"
 echo -ne "\t + Backuping ${servers[2]} files..."
 if [ $amb == "valid" ] || [ $amb == "preprod" ] || [ $amb == "prod" ]; then
@@ -151,11 +156,11 @@ else
 fi
 }
 
-function_dumping() {
+function dumping() {
 bkpdmp="$dirbkp/dump_$amb-$data.sql.gz"
 echo -ne "\t + Backuping ${servers[0]} database..."
 ssh root@${servers[1]} "mysqldump $db_options ${servers[0]} | gzip > $bkpdmp"
-if [ $? -eq 0 ]; then
+if [ $? -eq $success ]; then
     echo -e "OK"
 else
     echo "ERROR!"
@@ -163,18 +168,18 @@ else
 fi
 }
 
-function_file(){
+function files(){
 if [ -z $arq ]; then
 	exit 1
 else
    full_path=$arq
    pack=`basename $arq`
    dirpack=`dirname $arq`
-   function_exec_routine
+   exec_routine
 fi
 }
 
-function_lista() {
+function lista() {
 # DESENV
 x=0
 for patch in `cat $lista`; do
@@ -185,11 +190,11 @@ done
 
 while getopts a:f:l:bucdxvh ARGS; do
 	case $ARGS in
-		a)	amb="${OPTARG}"		&&	function_ambiente	;;
-		f)	arq="${OPTARG}" 	&&	function_file		;;
-		l)	lista="${OPTARG}"	&&	function_lista		;;
-		b)	function_backup		;;
-		u)	function_dumping	;;
+		a)	amb="${OPTARG}"		&&	ambiente	;;
+		f)	arq="${OPTARG}" 	&&	files		;;
+		l)	lista="${OPTARG}"	&&	lista		;;
+		b)	backup		;;
+		u)	dumping		;;
 		c)	verify=1	;;
 		d)	set -x		;;
 		x)	set +x		;;
