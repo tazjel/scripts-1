@@ -6,22 +6,19 @@ author="Raphael Rabelo"
 lastmod="23-04-2013"
 data=`date +%F_%H%M`
 datelog=`date "+%d/%b/%Y:%H:%M:%S"`
-dirbkp="/home/backups"
-dirlog="/var/log/valorapps"
-applog="valordep.log"
 userhost=`who i am | awk -F " " '{print $5}'`
 verify=0
 optind=1
 success=0
 error=1
 
-# Environment Definitions
-docroot="/var/www/valor"
-httpduser="apache"
-httpgrp="websrv"
-
 function check_error() {
-	if [[ "$?" -eq "$success" ]]; then echo -e "OK"; else echo "ERROR" ; exit $error; fi
+if [[ "$?" -eq "$success" ]]; then
+	echo -e "OK"
+else
+	echo "ERROR"
+	exit $error
+fi
 }
 
 function show_usage() {
@@ -89,11 +86,7 @@ function exec_routine() {
 	echo -e "OK"
 	done
 
-	[[ "$verify" -eq "1" ]] && check_files || log
-}
-
-function exec_list() {
-# DESENV
+	if [[ "$verify" -eq "1" ]]; then check_files; else log; fi
 }
 
 function check_files() {
@@ -135,10 +128,10 @@ check_error
 }
 
 function dumping() {
-bkpdmp="$dirbkp/dump_$amb-$data.sql.gz"
-echo -ne "\t + Backuping ${servers[0]} database..."
-ssh root@${servers[1]} "mysqldump $db_options ${servers[0]} | gzip > $bkpdmp"
-check_error
+		echo -ne "\t + Backuping ${servers[0]} database..."
+	bkpdmp="$dirbkp/dump_$amb-$data.sql.gz"
+	ssh root@${servers[1]} "mysqldump $db_options ${servers[0]} | gzip > $bkpdmp"
+	check_error
 }
 
 function lista() {
@@ -152,6 +145,7 @@ else
 		list[$x]=$patch
 		let x++
 	done
+fi
 }
 
 while getopts a:f:l:bucdvh ARGS; do
