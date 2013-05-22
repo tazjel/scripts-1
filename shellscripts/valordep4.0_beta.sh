@@ -152,6 +152,7 @@ else
 		list[$x]=$patch
 		let x++
 	done
+print list
 }
 
 while getopts a:f:l:bucdvh ARGS; do
