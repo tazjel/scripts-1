@@ -1,32 +1,57 @@
+# Appname: deployer
+# Created by: Raphael Rabelo - rabelo@raphaelr.com.br
+# May-2013
+# Valor Economico - 2013
+########################################################
 import fileinput
 import argparse
+import os
+import tarfile
 
-def fnEnviron(environments):
-	print "Environments: ", args.environment
-	for i in environments:
-		print "Setup %s ... Please wait!" % i
+def fnEnv(env):
+	print "Environments: ", env
+	for i in env:
+		print "\tSetup %r ... Please wait!" % i
+
+def fnExtract(txtFile):
+	tmpList = fileinput.input([txtFile[0]])
+	for line in tmpList:
+		newLine = line.strip('\n')
+		fileList.append(newLine)
+	
+	fileList = []
+	localPath = '/var/www/valor/online'
+	for eachFile in fileList:
+		print eachFile
+		tar = tarfile.open(eachFile)
+		tar.extractall()
+		tar.close
+	
 		
 def fnBackup():
 	print "\tMaking backup..."
-	flagOK = '1'
 	
 def fnDump():
 	print "\tMaking dump..."
-	flagOK = '1'
-	
-parser = argparse.ArgumentParser(prog='valordep')
-parser.add_argument('-e', '--environment', nargs='+', required=1, action='store', help='Environment to apply the package files.')
-parser.add_argument('-b', '--backup', nargs='*', action='store', help='Make backup of files.')
-parser.add_argument('-u', '--dump', nargs='*', action='store', help='Make database dumping.')
+
+parser = argparse.ArgumentParser(prog='deployer')
+# Add required=1 on -e
+parser.add_argument('-e', '--environment', nargs='+', action='store', help='Environment to apply the package files.')
+parser.add_argument('-l', '--list', nargs='+', action='store', help='List of files do deploy' )
+parser.add_argument('-b', '--backup', action='store_false', help='Make backup of files.')
+parser.add_argument('-u', '--dump', action='store_false', help='Make database dumping.')
 args = parser.parse_args()
-print "ARGS: ", args
+print "\nARGUMENTS:\n\t%r\n" % args
 
+env=args.environment
 
-if args.backup != None and len(args.backup) == 0:
+if args.backup == False:
 	fnBackup()
-if args.dump != None and len(args.backup) == 0:
+if args.dump == False:
 	fnDump()
-	
+
+fnExtract(args.list)
+
 ## Read file line by line
 #ArqTxt = 'lista.txt'
 #Lista = fileinput.input([ArqTxt])
