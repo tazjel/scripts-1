@@ -26,8 +26,8 @@ def fnExtract(txtFile):
 		tar = tarfile.open(eachFile)
 		tar.extractall()
 		tar.close
-	
-		
+
+
 def fnBackup():
 	print "\tMaking backup..."
 	
