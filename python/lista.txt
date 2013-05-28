@@ -1,7 +1,0 @@
-/home/pacotes/pkg20130503/rev_16615.tar
-/home/pacotes/pkg20130503/rev_16617.tar
-/home/pacotes/pkg20130503/rev_16632.tar
-/home/pacotes/pkg20130503/rev_16638.tar
-/home/pacotes/pkg20130503/patch16665_pkg20130503.tar
-/home/pacotes/pkg20130503/patch16681_pkg20130503.tar
-/home/pacotes/pkg20130503/patch16686_pkg20130503.tar
