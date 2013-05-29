@@ -17,7 +17,16 @@ def fnEnv(env):
 	for i in env:
 		print "\tSetup %r ... Please wait!" % i
 
-def fnExtract(txtFile):
+def fnExtFile(arq):
+	# Clean the tmp folder before extract files	
+	os.system('rm -rf %s' % localPath)
+	tar = tarfile.open(arq)
+	tar.extractall(localPath)
+	tar.close
+	extractOk = True
+	return extractOk
+	
+def fnExtList(txtFile):
 	fileList = []
 	tmpList = fileinput.input([txtFile[0]])
 	# Feed the fileList array with the args passed from tmpList
@@ -48,9 +57,9 @@ def fnDump():
 	print "\tMaking dump..."
 
 parser = argparse.ArgumentParser(prog='deployer')
-# Add required=1 on -e
-parser.add_argument('-e', '--environment', nargs='+', action='store', help='Environment to apply the package files.')
-parser.add_argument('-l', '--list', nargs='+', action='store', help='List of files do deploy' )
+parser.add_argument('-e', '--environment', nargs='+', required=1, action='store', help='Environment to apply the package files.')
+parser.add_argument('-f', '--file', nargs=1, action='store', help='File to deploy - Must be a .tar file.')
+parser.add_argument('-l', '--list', nargs='+', action='store', help='List of files do deploy.')
 parser.add_argument('-b', '--backup', action='store_false', help='Make backup of files.')
 parser.add_argument('-u', '--dump', action='store_false', help='Make database dumping.')
 args = parser.parse_args()
@@ -58,15 +67,32 @@ print "\nARGUMENTS:\n\t%r\n" % args
 
 env = args.environment
 
+# Checks if options -b and/or -u was set and call the function
 if args.backup == False:
 	fnBackup()
 if args.dump == False:
 	fnDump()
 
-if fnExtract(args.list) == True:
-	os.system('fab fnWeb')
+if args.file != None:
+	if tarfile.is_tarfile(args.file[0]):
+		if fnExtFile(args.file[0]) == True:
+			for i in env:
+				os.system('fab web_%s' % i)
+				exit(0)
+	else:
+		print "ERROR"
+		exit(1)
 else:
-	exit(1)
+	pass
+
+if args.list != None:
+	if fnExtList(args.list) == True:
+		for i in env:
+			os.system('fab web_%s' % i)
+	else:
+		exit(1)
+else:
+	pass
 
 ## Read file line by line
 #ArqTxt = 'lista.txt'
