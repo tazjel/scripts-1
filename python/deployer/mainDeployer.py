@@ -8,20 +8,13 @@ import argparse
 import os
 import tarfile
 from sys import exit
-
-localPath = '/tmp/_valor_online.tmp/'
-remotePath = '/var/www/valor/online'
-
-def fnEnv(env):
-	print "Environments: ", env
-	for i in env:
-		print "\tSetup %r ... Please wait!" % i
+import fabfile
 
 def fnExtFile(arq):
 	# Clean the tmp folder before extract files	
-	os.system('rm -rf %s' % localPath)
+	os.system('rm -rf %s' % fabfile.localPath)
 	tar = tarfile.open(arq)
-	tar.extractall(localPath)
+	tar.extractall(fabfile.localPath)
 	tar.close
 	extractOk = True
 	return extractOk
@@ -33,14 +26,13 @@ def fnExtList(txtFile):
 	for line in tmpList:
 		newLine = line.strip('\n')
 		fileList.append(newLine)
-	# Clean the tmp folder before extract files	
-	os.system('rm -rf %s' % localPath)
-	# Extract file on path defined in 'localPath'
+
+	# Extract file on path defined in 'fabfile.localPath'
 	for eachFile in fileList:
 		if tarfile.is_tarfile(eachFile):
-			print "\t=> Extracting %r on %r" % (eachFile, localPath)
+			print "\t=> Extracting %r on %r" % (eachFile, fabfile.localPath)
 			tar = tarfile.open(eachFile)
-			tar.extractall(localPath)
+			tar.extractall(fabfile.localPath)
 			tar.close
 			extractOk = True
 		else:
@@ -51,10 +43,10 @@ def fnExtList(txtFile):
 	
 		
 def fnBackup():
-	print "\tMaking backup..."
+	os.system('fab -R %s_web backup' % env[0])
 	
 def fnDump():
-	print "\tMaking dump..."
+	os.system('fab -R %s_db dump' % env[0])
 
 parser = argparse.ArgumentParser(prog='deployer')
 parser.add_argument('-e', '--environment', nargs='+', required=1, action='store', help='Environment to apply the package files.')
@@ -64,8 +56,8 @@ parser.add_argument('-b', '--backup', action='store_false', help='Make backup of
 parser.add_argument('-u', '--dump', action='store_false', help='Make database dumping.')
 args = parser.parse_args()
 print "\nARGUMENTS:\n\t%r\n" % args
-
 env = args.environment
+
 
 # Checks if options -b and/or -u was set and call the function
 if args.backup == False:
@@ -77,7 +69,7 @@ if args.file != None:
 	if tarfile.is_tarfile(args.file[0]):
 		if fnExtFile(args.file[0]) == True:
 			for i in env:
-				os.system('fab web_%s' % i)
+				os.system('fab -R %s_web deploy' % i)
 				exit(0)
 	else:
 		print "ERROR"
@@ -88,7 +80,7 @@ else:
 if args.list != None:
 	if fnExtList(args.list) == True:
 		for i in env:
-			os.system('fab web_%s' % i)
+			os.system('fab -R %s_web deploy' % i)
 	else:
 		exit(1)
 else:
