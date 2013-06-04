@@ -15,14 +15,16 @@ env.roledefs = {
 	'valid_db'		:	['web-valid-mysql01'],
 	'preprod_db'	:	['web-preprod-mysql01']
 }
-
+@roles()
 def cmd(cmd):
 	run(cmd)
 	
 @roles('teste_web')
 def deploy():
-	with settings(warn_only=True):
+	with hide('running'):
+		print 'Copying ...'
 		put(localPath, remotePath)
+		print 'Cleaning temporary...'
 		local('rm -rf %s' % localPath)
 
 def backup():
