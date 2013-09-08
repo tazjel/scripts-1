@@ -4,7 +4,7 @@ import urllib
 
 myurl = "rabeloo.myftp.org"
 username = "rabeloo@gmail.com"
-password = "Rabe!00(*)"
+password = ""
 
 web_page = urllib.urlopen("http://iptools.bizhat.com/ipv4.php")
 myip = web_page.read()

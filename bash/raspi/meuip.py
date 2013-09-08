@@ -9,7 +9,7 @@ import re
 
 to = 'rabelo@raphaelr.com.br'
 gmail_user = 'meuip@raphaelr.com.br'
-gmail_password = 'KJAIeh93nu@(G13'
+gmail_password = ''
 smtpserver = smtplib.SMTP('smtp.gmail.com', 587)
 smtpserver.ehlo()
 smtpserver.starttls()
