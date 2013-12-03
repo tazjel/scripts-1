@@ -10,10 +10,10 @@ import urllib
 import re
 
 # Email To:
-to_mail = 'rabelo@raphaelr.com.br'
+to_mail = ''
 
 # Server Settings
-from_mail = 'meuip@raphaelr.com.br'
+from_mail = ''
 from_passwd = ''
 server = smtplib.SMTP('smtp.gmail.com', 587)
 server.ehlo()
