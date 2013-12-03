@@ -15,7 +15,7 @@ to_mail = 'rabelo@raphaelr.com.br'
 
 # Server Settings
 from_mail = 'meuip@raphaelr.com.br'
-from_passwd = 'dEFRAp@(u39HT48N'
+from_passwd = ''
 server = smtplib.SMTP('smtp.gmail.com', 587)
 server.ehlo()
 server.starttls()
