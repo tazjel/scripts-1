@@ -31,11 +31,10 @@ def get_int_ip(ifname):
 
 # Getting IP's
 intaddr = get_int_ip('eth0')
-extaddr = urllib.urlopen("http://icanhazip.com").read()
+extaddr = urllib.urlopen("http://curlmyip.com").read()
 
 # Sending email ...
 msg_text="Internal IP: %s \nExternal IP: %s" % (intaddr,extaddr)
-print msg_text
 msg = MIMEText(msg_text)
 msg['From'] = from_mail
 msg['To'] = to_mail
