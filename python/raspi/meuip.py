@@ -3,23 +3,45 @@
 import subprocess
 import smtplib
 import socket
-from email.mime.text import MIMEText
+import fcntl
+import struct
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
 import urllib
 import re
 
-to = 'rabelo@raphaelr.com.br'
-gmail_user = 'meuip@raphaelr.com.br'
-gmail_password = ''
-smtpserver = smtplib.SMTP('smtp.gmail.com', 587)
-smtpserver.ehlo()
-smtpserver.starttls()
-smtpserver.ehlo
-smtpserver.login(gmail_user, gmail_password)
+# Email To:
+to_mail = 'rabelo@raphaelr.com.br'
 
-ipaddr = urllib.urlopen("http://icanhazip.com").read()
-msg = MIMEText(ipaddr)
-msg['Subject'] = ipaddr
-msg['From'] = gmail_user
-msg['To'] = to
-smtpserver.sendmail(gmail_user, [to], msg.as_string())
-smtpserver.quit()
+# Server Settings
+from_mail = 'meuip@raphaelr.com.br'
+from_passwd = 'dEFRAp@(u39HT48N'
+server = smtplib.SMTP('smtp.gmail.com', 587)
+server.ehlo()
+server.starttls()
+server.ehlo
+server.login(from_mail, from_passwd)
+
+def get_int_ip(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+# Getting IP's
+intaddr = get_int_ip('eth0')
+extaddr = urllib.urlopen("http://icanhazip.com").read()
+
+# Sending email ...
+msg_text="Internal IP: %s \nExternal IP: %s" % (intaddr,extaddr)
+print msg_text
+msg = MIMEText(msg_text)
+msg['From'] = from_mail
+msg['To'] = to_mail
+msg['Subject'] = "[Raspi] My ip"
+
+print msg
+server.sendmail(from_mail, [to_mail], msg.as_string())
+server.quit()
